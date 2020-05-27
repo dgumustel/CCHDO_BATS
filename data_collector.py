@@ -4,7 +4,7 @@ import os
 from zipfile import ZipFile
 
 # local imports
-sys.path.append(os.path.abspath('../shared'))
+sys.path.append(os.path.abspath('shared'))
 import my_module as mymod
 from importlib import reload
 reload(mymod)
@@ -40,6 +40,6 @@ for link in get_soup(URL).find_all('a'):
             file.write(response.content)
             zip_file = file.name
             with ZipFile(zip_file, 'r') as zipObj:
-                zipObj.extractall(out_dir + '/' + file.name)
+                zipObj.extractall(out_dir + '/' + file.name[:-8])
 
         
