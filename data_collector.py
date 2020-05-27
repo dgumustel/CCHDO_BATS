@@ -10,11 +10,18 @@ from importlib import reload
 reload(mymod)
 
 # make sure the output directory exists
-this_dir = os.path.abspath('.').split('/')[-1]
-this_parent = os.path.abspath('.').split('/')[-2]
-out_dir = '../../' + this_parent + '/' + this_dir + '_data'
-print('Creating ' + out_dir + ', if needed')
-mymod.make_dir(out_dir)
+try:
+    this_dir = os.path.abspath('.').split('/')[-1]
+    this_parent = os.path.abspath('.').split('/')[-2]
+    out_dir = '../../' + this_parent + '/' + this_dir + '_data'
+    print('Creating ' + out_dir + ', if needed \n')
+    mymod.make_dir(out_dir)
+except:
+    this_dir = os.path.abspath('.').split('\\')[-1]
+    this_parent = os.path.abspath('.').split('\\')[-2]
+    out_dir = '../../' + this_parent + '/' + this_dir + '_data'
+    print('Creating ' + out_dir + ', if needed \n')
+    mymod.make_dir(out_dir)
 
 # access the data
 data_dir = '../' + this_parent + '/' + this_dir + '_data/'
