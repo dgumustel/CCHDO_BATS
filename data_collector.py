@@ -80,4 +80,5 @@ time = d2.get('BIOS20160414_10323001_ct1')
 
 #time = time['CTD'].str.extract('(\d+)').astype(int)
 #time = time.loc[5,]
+#time = time.loc[5,]
 
