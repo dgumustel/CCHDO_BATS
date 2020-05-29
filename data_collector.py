@@ -2,6 +2,7 @@
 import sys, os
 import os
 from zipfile import ZipFile
+import pandas as pd
 
 # local imports
 sys.path.append(os.path.abspath('shared'))
@@ -49,4 +50,34 @@ for link in get_soup(URL).find_all('a'):
             with ZipFile(zip_file, 'r') as zipObj:
                 zipObj.extractall(out_dir + '/' + file.name[:-8])
 
-        
+# Create list of CCHDO BATS file names
+csvs = [x for x in os.listdir('../CCHDO_BATS_data/BIOS20160414/') if x.endswith('.csv')]
+fns = [os.path.splitext(os.path.basename(x))[0] for x in csvs]
+
+# Dictionary for the data
+d = {}
+for i in range(len(fns)):
+    d[fns[i]] = pd.read_csv('../CCHDO_BATS_data/BIOS20160414/' + csvs[i], skiprows=11)
+# Dictionary for the time
+d2 = {}
+for i in range(len(fns)):
+    d2[fns[i]] = pd.read_csv('../CCHDO_BATS_data/BIOS20160414/' + csvs[i], nrows=8,usecols=[0])
+
+
+#############
+
+a = d.get('BIOS20160414_10323001_ct1')
+b = a['DBAR']
+
+df_ = pd.DataFrame(columns=["Time"])
+
+
+ff = pd.DataFrame.from_dict(d2,orient='index',columns=['A'])
+
+
+
+time = d2.get('BIOS20160414_10323001_ct1')
+
+#time = time['CTD'].str.extract('(\d+)').astype(int)
+#time = time.loc[5,]
+
