@@ -65,39 +65,78 @@ for link in get_soup(URL).find_all('a'):
 
 
 
-# DATA PROCESSING
-
 # Create list of CCHDO BATS file names
 csvs = [x for x in os.listdir('../CCHDO_BATS_data/BIOS20160414/') if x.endswith('.csv')]
 fns = [os.path.splitext(os.path.basename(x))[0] for x in csvs]
+
+
+
+## imprt the csv files
+import glob
+path = '../CCHDO_BATS_data/BIOS20160414/' # use your path
+all_files = glob.glob(path + "/*.csv")
+
+## Create df for time
+li = []
+
+for filename in all_files:
+    df = pd.read_csv(filename, index_col=None,  nrows=8,usecols=[0])
+    li.append(df)
+
+# time
+time = pd.concat(li, axis=0, ignore_index=True)
+time = time.iloc[5::8, :]
+time = time['CTD'].str.extract('(\d+)').astype(int)
+# latitde
+lat = pd.concat(li, axis=0, ignore_index=True)
+lat = lat.iloc[6::8, :]
+lat = lat['CTD'].str.extract('(\d+)').astype(int)
+# longitude
+lon = pd.concat(li, axis=0, ignore_index=True)
+lon = lon.iloc[7::8, :]
+lon = lon['CTD'].str.extract('(\d+)').astype(int)
+
+
+## Create df for other data
+li2 = []
+
+for filename in all_files:
+    df2 = pd.read_csv(filename, index_col=None,  skiprows=11)
+    li2.append(df2)
+
+data = pd.concat(li2, axis=0, ignore_index=True)
+
+
 
 # Dictionary for the data
 d = {}
 for i in range(len(fns)):
     d[fns[i]] = pd.read_csv('../CCHDO_BATS_data/BIOS20160414/' + csvs[i], skiprows=11)
-    
 # Dictionary for the time
-
 d2 = {}
 for i in range(len(fns)):
     d2[fns[i]] = pd.read_csv('../CCHDO_BATS_data/BIOS20160414/' + csvs[i], nrows=8,usecols=[0])
 
+# list of dict keys
+xx = []
+for key in d:
+    xx.append(key)
 
-#############
+# series of data to plot
 
-# get raw data of one file
-a = d.get('BIOS20160414_10323001_ct1')
+sal = [None]*len(d)
+for i in range(len(d)):
+    sal[i]= data.iloc[:len(d[xx[i]]), 2]
 
-# get one column of file
-b = a['DBAR']
-
-# create empty dataframe for times
-df_ = pd.DataFrame(columns=["Time"])
-
-ff = pd.DataFrame.from_dict(d2,orient='index',columns=['A'])
-
-time = d2.get('BIOS20160414_10323001_ct1')
-
-#time = time['CTD'].str.extract('(\d+)').astype(int)
-#time = time.loc[5,]
-
+temp = [None]*len(d)
+for i in range(len(d)):
+    temp[i]= data.iloc[:len(d[xx[i]]), 1]
+    
+oxy = [None]*len(d)
+for i in range(len(d)):
+    oxy[i]= data.iloc[:len(d[xx[i]]), 3]
+    
+flo = [None]*len(d)
+for i in range(len(d)):
+    flo[i]= data.iloc[:len(d[xx[i]]), 5]
+    
