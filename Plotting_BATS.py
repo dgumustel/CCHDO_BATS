@@ -82,12 +82,14 @@ plt.contourf(time, qcdf['CTDPRS'], CT, alpha=0.7,cmap=cmocean.cm.thermal);
 Hold on
 plt.contour(time,qcdf['CTDPRS'],mld, linestyle=dash,linecolor=white)
 plt.setp(ax1.get_xticklabels(), fontsize=6)
-cb=plt.colorbar(SA)
+cb=plt.colorbar(CT)
 cb.set_label(‘CT’)
 
 ax2=subplot(412,sharex=ax1)
 plt.contourf(time,qcdf['CTDPRS'],SA,alpha=20, cmap=cmocean.cm.haline)
 plt.setp(ax2.get_xticklabels(), visible=False)
+cb=plt.colorbar(SA)
+cb.set_label(‘SA’)
 
 ax3=(413,sharex=ax1)
 plt.contourf(time,qcdf['CTDPRS'],qcdf['OXY'],alpha=20, cmap=cmocean.cm.oxy)
