@@ -12,7 +12,9 @@ from zipfile import ZipFile
 import pandas as pd
 from bs4 import BeautifulSoup as bs
 import requests
-import argparse
+import glob
+import numpy as np
+import pickle
 
 # local imports
 sys.path.append(os.path.abspath('shared'))
@@ -34,37 +36,80 @@ except:    # default to Windows OS if error occurs above
     print('Creating ' + out_dir + ', if needed \n')
     mymod.make_dir(out_dir)
 
-# identify data directory
-data_dir = '../' + this_parent + '/' + this_dir + '_data/'
 
-# create the parser object
-parser = argparse.ArgumentParser()
 
-print('\nWhat year would you like to look at? (enter an integer)')
-year = input('\nYear: ')
-print('\nWhat month would you like to look at? (enter an integer)')
-month = input('\nMonth: ')
-print('\nWhat day would you like to look at? (enter an integer)')
-day = input('\nDay: ')
+# USER INPUT ########################################################
 
-selection = year + month + day
-print('\nYour selection is: ' + selection)
-
+# ask user to select a date
 class ValueError(Exception):
     pass
 
-# DATA COLLECTION
+# first select year -- currently only 2016 is functional
+print('\nWhat year would you like to look at? \nData is available for:')
+print('\n    2016')
+year = input('\nYear: ')
 
-# define desired URL and filetype
+# then select month -- only 6 months are available for 2016
+if year == '2016':
+    print('\nWhat month would you like to look at? \nData is available for:')
+    print('\n    03: March          04: April')
+    print('\n    06: June           07: July')
+    print('\n    11: November       12: December')
+    print('\nPlease enter the number corresponding to your month of interest')
+    month = input('\nMonth: ')
+else:
+    raise ValueError('Invalid selection or data unvailable. Please try again.')
+    
+# then select day -- only a handful of days are available for 2016
+# raise errors if user does not select appropriate date
+if month == '03':
+    print('What cruise start date would you like to look at? \nData is available for:')
+    print('\n    08: March 8th \n    23: March 23rd')
+    print('\nPlease enter the number corresponding to your date of interest')
+    day = input('\nDay: ')
+    if day != '08' and day != '23':
+        raise ValueError('Invalid selection or data unvailable. Please try again.')
+elif month == '04':
+    print('What cruise start date would you like to look at? \nData is available for:')
+    print('\n    04: April 4th \n    14: April 14th')
+    print('\nPlease enter the number corresponding to your date of interest')
+    day = input('\nDay: ')
+    if day != '04' and day != '14':
+        raise ValueError('Invalid selection or data unvailable. Please try again.')
+elif month == '06':    # some months only have data from one cruise
+    print('\nData is available for June 13th')
+    day = '13'
+elif month == '07':
+    print('\nData is available for July 21st')
+    day = '21'
+elif month == '11':
+    print('\nData is available for November 18th')
+    day = '18'
+elif month == '12':
+    print('\nData is available for December 12th')
+    day = '12'
+
+else:    # stop program if user did not select appropriate month
+    raise ValueError('Invalid selection or data unvailable. Please try again.')
+
+selection = year + month + day
+print('\nYour selection is: ' + year + ' ' + month + ' ' + day)
+
+
+
+# DATA COLLECTION ########################################################
+
+# define the desired domain, url, and filetype
 DOMAIN = 'https://cchdo.ucsd.edu'
 URL = 'https://cchdo.ucsd.edu/cruise/' + selection
 FILETYPE = '.zip'
 
-# function to get text from URL and parse as html
+# preemptively define zip_file for file removal later
+zip_file = ''
+
+# define function to get text from URL and parse as html
 def get_soup(url):
     return bs(requests.get(url).text, 'html.parser')
-    
-zip_file = ''
     
 # scrape data from URL
 for link in get_soup(URL).find_all('a'):
@@ -74,74 +119,76 @@ for link in get_soup(URL).find_all('a'):
         with open(link.text, 'wb') as file:
             response = requests.get(DOMAIN + file_link)    # get file
             file.write(response.content)    # write file to machine
-            print(file)
+            #print(file)
             
-            # extract all files from .zip to a new data directory
+            # extract all files from zip_file to a new data subdirectory
             zip_file = file.name
             with ZipFile(zip_file, 'r') as zipObj:
+                print('\nExtracting data files to: ' + out_dir + '/' + file.name[:-8])
                 zipObj.extractall(out_dir + '/' + file.name[:-8])
 
-if os.path.exists(zip_file):
+# the time selection code will not catch all input errors, so include a raise error here
+if os.path.exists(zip_file):    # remove corresponding zip_file if it exists
     os.remove(zip_file)
-else:
-    raise ValueError('Invalid selection. Please try again.')
- 
+else:    # stop program if no corresponding exists
+    raise ValueError('Invalid selection or data unvailable. Please try again.')
 
+
+
+# DATA PROCESSING ########################################################
+
+# define path to extracted data
 path = '../CCHDO_BATS_data/BIOS' + selection
 
-# Create list of CCHDO BATS file names
+# create list of CCHDO BATS file names
 csvs = [x for x in os.listdir(path) if x.endswith('.csv')]
 fns = [os.path.splitext(os.path.basename(x))[0] for x in csvs]
 
-
-
-## imprt the csv files
-import glob
-#path = '../CCHDO_BATS_data/BIOS20160414/' # use your path
+# glob files
 all_files = glob.glob(path + "/*.csv")
 
-## Create df for time
+# create df for time
 li = []
 
+# turn files in pandas dataframes
 for filename in all_files:
     df = pd.read_csv(filename, index_col=None,  nrows=8,usecols=[0])
     li.append(df)
 
-# time
+# get metadata from header:
+# get times
 time = pd.concat(li, axis=0, ignore_index=True)
 time = time.iloc[5::8, :]
 time = time['CTD'].str.extract('(\d+)').astype(int)
-# latitde
+# get latitudes
 lat = pd.concat(li, axis=0, ignore_index=True)
 lat = lat.iloc[6::8, :]
 lat = lat['CTD'].str.extract('(\d+)').astype(int)
-# longitude
+# get longitudes
 lon = pd.concat(li, axis=0, ignore_index=True)
 lon = lon.iloc[7::8, :]
 lon = lon['CTD'].str.extract('(\d+)').astype(int)
 
-
-## Create df for other data
+# create df for measurements
 li2 = []
 
+# fill dataframe with measurements
 for filename in all_files:
     df2 = pd.read_csv(filename, index_col=None,  skiprows=11)
     li2.append(df2)
 
 data = pd.concat(li2, axis=0, ignore_index=True)
 
-
-
-# Dictionary for the data
+# create and fill dictionary for the data
 d = {}
 for i in range(len(fns)):
     d[fns[i]] = pd.read_csv(path + '/' + csvs[i], skiprows=11)
-# Dictionary for the time
+# create and fill dictionary for the time
 d2 = {}
 for i in range(len(fns)):
     d2[fns[i]] = pd.read_csv(path + '/' + csvs[i], nrows=8,usecols=[0])
 
-# list of dict keys
+# get list of dict keys
 xx = []
 for key in d:
     xx.append(key)
@@ -168,11 +215,9 @@ depth = [None]*len(d)
 for i in range(len(d)):
     depth[i]= data.iloc[:len(d[xx[i]]), 0]
     
-    
-import numpy as np
-sal1 = np.array(sal[0])
+#sal1 = np.array(sal[0])    # see example salinity data
 
-import pickle
+# save data as pickle files for plotting
 f = open('store.pckl', 'wb')
 pickle.dump([temp, sal, oxy, flo, depth, time, lat, lon], f)
 f.close()
@@ -180,3 +225,5 @@ f.close()
 f = open('store.pckl', 'rb')
 obj = pickle.load(f)
 f.close()
+
+print('\nReady to plot.')
