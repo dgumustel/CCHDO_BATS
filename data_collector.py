@@ -12,6 +12,7 @@ from zipfile import ZipFile
 import pandas as pd
 from bs4 import BeautifulSoup as bs
 import requests
+import argparse
 
 # local imports
 sys.path.append(os.path.abspath('shared'))
@@ -36,13 +37,27 @@ except:    # default to Windows OS if error occurs above
 # identify data directory
 data_dir = '../' + this_parent + '/' + this_dir + '_data/'
 
+# create the parser object
+parser = argparse.ArgumentParser()
 
+print('\nWhat year would you like to look at? (enter an integer)')
+year = input('\nYear: ')
+print('\nWhat month would you like to look at? (enter an integer)')
+month = input('\nMonth: ')
+print('\nWhat day would you like to look at? (enter an integer)')
+day = input('\nDay: ')
+
+selection = year + month + day
+print('\nYour selection is: ' + selection)
+
+class ValueError(Exception):
+    pass
 
 # DATA COLLECTION
 
 # define desired URL and filetype
 DOMAIN = 'https://cchdo.ucsd.edu'
-URL = 'https://cchdo.ucsd.edu/cruise/BIOS20160414'
+URL = 'https://cchdo.ucsd.edu/cruise/' + selection
 FILETYPE = '.zip'
 
 # function to get text from URL and parse as html
@@ -53,27 +68,30 @@ def get_soup(url):
 for link in get_soup(URL).find_all('a'):
     file_link = link.get('href')
     if FILETYPE in file_link:    # check text for .zip files
-        print('collecting data: ' + file_link)
+        print('\nCollecting data: ' + file_link)
         with open(link.text, 'wb') as file:
             response = requests.get(DOMAIN + file_link)    # get file
             file.write(response.content)    # write file to machine
+            print(file)
             
             # extract all files from .zip to a new data directory
             zip_file = file.name
             with ZipFile(zip_file, 'r') as zipObj:
                 zipObj.extractall(out_dir + '/' + file.name[:-8])
+    #else:
+      #  raise ValueError('Invalid input for time period')
 
-
+path = '../CCHDO_BATS_data/BIOS' + selection
 
 # Create list of CCHDO BATS file names
-csvs = [x for x in os.listdir('../CCHDO_BATS_data/BIOS20160414/') if x.endswith('.csv')]
+csvs = [x for x in os.listdir(path) if x.endswith('.csv')]
 fns = [os.path.splitext(os.path.basename(x))[0] for x in csvs]
 
 
 
 ## imprt the csv files
 import glob
-path = '../CCHDO_BATS_data/BIOS20160414/' # use your path
+#path = '../CCHDO_BATS_data/BIOS20160414/' # use your path
 all_files = glob.glob(path + "/*.csv")
 
 ## Create df for time
@@ -111,11 +129,11 @@ data = pd.concat(li2, axis=0, ignore_index=True)
 # Dictionary for the data
 d = {}
 for i in range(len(fns)):
-    d[fns[i]] = pd.read_csv('../CCHDO_BATS_data/BIOS20160414/' + csvs[i], skiprows=11)
+    d[fns[i]] = pd.read_csv(path + '/' + csvs[i], skiprows=11)
 # Dictionary for the time
 d2 = {}
 for i in range(len(fns)):
-    d2[fns[i]] = pd.read_csv('../CCHDO_BATS_data/BIOS20160414/' + csvs[i], nrows=8,usecols=[0])
+    d2[fns[i]] = pd.read_csv(path + '/' + csvs[i], nrows=8,usecols=[0])
 
 # list of dict keys
 xx = []
