@@ -1,6 +1,6 @@
 #download
 
-# basemap at https://matplotlib.org/basemap/users/download.html Download
+# basemap: conda install -c anaconda basemap
 # gsw teos10: To install with Anaconda: conda install -c conda-forge cmocean
 #remember to restart ipython after install to intialize 
 
