@@ -43,6 +43,8 @@ m.drawmeridians(meridians,labels=[False,False,False,True])
 plt.title('BATS Study Area')
 plt.show()
 
+plt.savefig('Bat_Map.png')
+
 print('Question for the class: how do you add a colorbar to a basemap background graphics object?')
 
 
@@ -106,6 +108,7 @@ plt.title('T-S at BATS at (\ntime_s[0])')
 cb.set_label('Density')
 plt.show()
 
+plt.savefig('T_S_plot.png')
 
 ##
 print('Property Plots Coming Up')
@@ -142,6 +145,7 @@ ax1.set_ylabel('Depth (dbar)')
 
 plt.show()
 
+plt.savefig('prop_plots.png')
 
 
 
