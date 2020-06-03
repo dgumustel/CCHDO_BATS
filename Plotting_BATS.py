@@ -62,12 +62,19 @@ sal_s = np.asarray(sal[0])
 depth_s = np.asarray(depth[0])
 didx=len(depth_s)-1
 depth_s=depth_s[:didx]
+sal_s=sal_s[:didx]
+depth_s = depth_s.astype(np.float)
 temp_s = np.asarray(temp[0])
+temp_s=temp_s[:didx]
+oxy_s=np.asarray(oxy[0])
+flo_s=np.asarray(flo[0])
+flo_s=flo_s[:didx]
+oxy_s=oxy_s[:didx]
 
 
-SA=gsw.SA_from_SP(sal_s,depth_s,lon_plot,lat_plot)
+SA=gsw.SA_from_SP(sal_s,depth_s,lon_plot[0],lat_plot[0])
 
-CT=gsw.CT_from_t(SA,temp_s,depth)
+CT=gsw.CT_from_t(SA,temp_s,depth_s)
 
 
 #CT_5mean=np.mean(CT)
@@ -77,7 +84,7 @@ CT=gsw.CT_from_t(SA,temp_s,depth)
 # plot T/S diagram - altered from example from https://medium.com@hafezahmad/making-#temperature-salinity-diagrams-called-the-t-s-diagram-with-python-and-r-#programming-5deec6378a29
 
 mint=np.min(CT)
-maxt=np.max(CT
+maxt=np.max(CT)
 mins=np.min(SA)
 maxs=np.max(SA)
 tempL=np.linspace(mint-1,maxt+1,len(SA))
@@ -85,17 +92,18 @@ salL=np.linspace(mins-1,maxs+1,len(SA))
 
 Tg, Sg = np.meshgrid(tempL,salL)
 sigma_theta = gsw.sigma0(Sg, Tg)
-cnt = np.linspace(sigma_theta.min(), sigma_theta.max(),50)
+cnt = np.linspace(sigma_theta.min(), sigma_theta.max(),len(SA))
 fig,ax=plt.subplots(figsize=(10,10))
 cs = ax.contour(Sg, Tg, sigma_theta,colors='grey',zorder=1)
 cl=plt.clabel(cs,fontsize=10)
-sc=plt.scatter(SA_5_day_mean,CT_5_day_mean,c=cnt)
+#sc=plt.scatter(SA_5_day_mean,CT_5_day_mean,c=cnt)
+sc=plt.scatter(SA,CT,c=cnt)
 cb=plt.colorbar(sc)
 cb.set_label('Density')
 plt.xlabel('Salinity A')
 plt.ylabel('Conservative Temperature')
-plt.title('T-S at BATS')
-cb.set_label('Density')
+plt.title('T-S at BATS at (\ntime_s[0])')
+cb.set_label('Potential Density')
 plt.show()
 
 
@@ -111,28 +119,28 @@ plt.figure(3)
 
 #plt.subplots(4,1,sharex=True)
 
-time=time.to_numpy()
+time_s=time.to_numpy()
 ax1=subplot(411)
-plt.contourf(time, depth, CT, alpha=0.7,cmap=cmocean.cm.thermal);
+plt.contourf(time, depth_s, CT, alpha=0.7,cmap=cmocean.cm.thermal);
 #plt.contour(time,depth,mld,linestyle=dash,linecolor=white)
 plt.setp(ax1.get_xticklabels(), fontsize=6)
 cb=plt.colorbar(CT)
 cb.set_label('CT')
 
 ax2=subplot(412,sharex=ax1)
-plt.contourf(time,depth,SA,alpha=20, cmap=cmocean.cm.haline)
+plt.contourf(time,depth_s,SA,alpha=20, cmap=cmocean.cm.haline)
 plt.setp(ax2.get_xticklabels(), visible=False)
 cb=plt.colorbar(SA)
 cb.set_label('SA')
 
 ax3=subplot(413,sharex=ax1)
-plt.contourf(time,depth,oxy,alpha=20, cmap=cmocean.cm.oxy)
+plt.contourf(time,depth_s,oxy_s,alpha=20, cmap=cmocean.cm.oxy)
 plt.setp(ax3.get_xticklabels(), visible=False)
 cb=plt.colorbar(oxy)
 cb.set_label('Oxygen')
 
 ax4=subplot(414,sharex=ax1)
-plt.contourf(time,depth,flo,alpha=.7,cmap=cmocean.cm.algae)
+plt.contourf(time,depth_s,flo_s,alpha=.7,cmap=cmocean.cm.algae)
 plt.setp(ax4.get_xticklabels(), fontsize=12, visible=True)
 plt.show()
 cb=plt.colorbar(flo)
