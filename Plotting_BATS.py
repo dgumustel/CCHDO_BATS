@@ -3,10 +3,26 @@
 # basemap: conda install -c anaconda basemap
 # basemap highres: conda install -c conda-forge basemap-data-hires
 # gsw teos10: To install with Anaconda: conda install -c conda-forge cmocean
-#remember to restart ipython after install to intialize 
+#remember to restart ipython after install to initialize 
+
+
+#imports
+import sys as sys
+import cmocean
+from mpl_toolkits.basemap import Basemap
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import gsw
+from matplotlib.ticker import MaxNLocator
+
+# what variables do you have
+
+
 
 ##make bathy map of BATS study area, Note: -180 t0 180
 print('Making Map of BATS study area')
+plt.figure(1)
 m = Basemap(width=1000000,height=1000000,projection='lcc',
             resolution='h',lat_1=31,lat_2=33,lat_0=32,lon_0=-64.5)
 im = m.etopo()
@@ -33,29 +49,34 @@ print('Question for the class: how do you add a colorbar to a basemap background
 # PLOT 1 - T/S 
 
 print('Plotting T/S')
+plt.figure(2)
 
 # plot t/s
-didx=len(qcdf['CTDPRS'])
+didx=len(depth)
 
-qcdf = qcdf[:-didx]
+# to use gsw - must be numpy array
 
-SA=gsw.SA_from_SP(sal,qcdf['CTDPRS'],lon_plot,lat_plot)
+sal_s = np.asarray(sal)
+depth_s = np.asarray(depth)
+temp_s = np.asarray(temp)
 
-CT=gsw.CT_from_t(SA,temp,qcdf['CTDPRS'])
+SA=gsw.SA_from_SP(sal,depth,lon_plot,lat_plot)
 
-for i=0:len(SA(:,1))
-CT_5mean=np.mean(CT(i,:))
-SA_5mean=np.mean(SA(i,:))
-end
+CT=gsw.CT_from_t(SA,temp,depth)
+
+
+#CT_5mean=np.mean(CT)
+#SA_5mean=np.mean(SA)
+# took this out since not a daily record
 
 # plot T/S diagram - altered from example from https://medium.com@hafezahmad/making-#temperature-salinity-diagrams-called-the-t-s-diagram-with-python-and-r-#programming-5deec6378a29
 
-mint=np.min(CT_5_day_mean)
-maxt=np.max(CT_5_day_mean)
-mins=np.min(SA_5_day_mean)
-maxs=np.max(SA_5_day_mean)
-tempL=np.linspace(mint-1,maxt+1,50)
-salL=np.linspace(mins-1,maxs+1,50)
+mint=np.min(CT)
+maxt=np.max(CT
+mins=np.min(SA)
+maxs=np.max(SA)
+tempL=np.linspace(mint-1,maxt+1,len(SA))
+salL=np.linspace(mins-1,maxs+1,len(SA))
 
 Tg, Sg = np.meshgrid(tempL,salL)
 sigma_theta = gsw.sigma0(Sg, Tg)
@@ -66,10 +87,10 @@ cl=plt.clabel(cs,fontsize=10)
 sc=plt.scatter(SA_5_day_mean,CT_5_day_mean,c=cnt)
 cb=plt.colorbar(sc)
 cb.set_label('Density')
-plt.xlabel('SA 5 Day Mean')
-plt.ylabel('CT 5 Day Mean')
-plt.title('Five-day Average T-S at BATS')
-cb.set_label(‘Density[kg m$^{-3}$]’)
+plt.xlabel('Salinity A')
+plt.ylabel('Conservative Temperature')
+plt.title('T-S at BATS')
+cb.set_label('Density')
 plt.show()
 
 
@@ -77,36 +98,40 @@ plt.show()
 
 ## Subplots of contoured properties v time
 
-#calculate MLD
-mld=gsw.mlp(SA,CT,depth)
+print('Property Plots are Next')
+plt.figure(3)
+
+#calculate MLD - apparently this doesn't exist for the python gsw
+#mld=gsw.mlp(SA,CT,depth)
+
+#plt.subplots(4,1,sharex=True)
 
 time=time.to_numpy()
 ax1=subplot(411)
-plt.contourf(time, qcdf['CTDPRS'], CT, alpha=0.7,cmap=cmocean.cm.thermal);
-Hold on
-plt.contour(time,qcdf['CTDPRS'],mld, linestyle=dash,linecolor=white)
+plt.contourf(time, depth, CT, alpha=0.7,cmap=cmocean.cm.thermal);
+#plt.contour(time,depth,mld,linestyle=dash,linecolor=white)
 plt.setp(ax1.get_xticklabels(), fontsize=6)
 cb=plt.colorbar(CT)
-cb.set_label(‘CT’)
+cb.set_label('CT')
 
 ax2=subplot(412,sharex=ax1)
-plt.contourf(time,qcdf['CTDPRS'],SA,alpha=20, cmap=cmocean.cm.haline)
+plt.contourf(time,depth,SA,alpha=20, cmap=cmocean.cm.haline)
 plt.setp(ax2.get_xticklabels(), visible=False)
 cb=plt.colorbar(SA)
-cb.set_label(‘SA’)
+cb.set_label('SA')
 
-ax3=(413,sharex=ax1)
-plt.contourf(time,qcdf['CTDPRS'],oxy,alpha=20, cmap=cmocean.cm.oxy)
+ax3=subplot(413,sharex=ax1)
+plt.contourf(time,depth,oxy,alpha=20, cmap=cmocean.cm.oxy)
 plt.setp(ax3.get_xticklabels(), visible=False)
 cb=plt.colorbar(oxy)
-cb.set_label(‘Oxygen (\mumol/kg)’)
+cb.set_label('Oxygen')
 
-ax4=(414,sharex=ax1)
-plt.contourf(time,qcdf['CTDPRS'],flo,alpha=.7,cmap=cmocean.cm.algae)
+ax4=subplot(414,sharex=ax1)
+plt.contourf(time,depth,flo,alpha=.7,cmap=cmocean.cm.algae)
 plt.setp(ax4.get_xticklabels(), fontsize=12, visible=True)
 plt.show()
 cb=plt.colorbar(flo)
-cb.set_label(‘Fluorescence’)
+cb.set_label('Fluorescence')
 
 plt.xlabel('Time')
 plt.ylabel('Depth (dbar)')
