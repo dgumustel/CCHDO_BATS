@@ -164,3 +164,7 @@ flo = [None]*len(d)
 for i in range(len(d)):
     flo[i]= data.iloc[:len(d[xx[i]]), 5]
     
+depth = [None]*len(d)
+for i in range(len(d)):
+    depth[i]= data.iloc[:len(d[xx[i]]), 0]
+    
