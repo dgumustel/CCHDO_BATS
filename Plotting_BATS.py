@@ -103,51 +103,87 @@ cb.set_label('Density')
 plt.xlabel('Salinity A')
 plt.ylabel('Conservative Temperature')
 plt.title('T-S at BATS at (\ntime_s[0])')
-cb.set_label('Potential Density')
+cb.set_label('Density')
 plt.show()
 
 
 ##
+print('Property Plots Coming Up')
+#plt.figure(3)
 
-## Subplots of contoured properties v time
+#plt.subplots(1,4,sharey=True)
+fig, ((ax1, ax2, ax3, ax4)) = plt.subplots(nrows=1, ncols=4, sharex=False, sharey=True)
 
-print('Property Plots are Next')
-plt.figure(3)
+ax1.grid(True)
+ctm= ax1.scatter(CT,-depth_s,c=CT,cmap=cmocean.cm.thermal);
+ax1.set_xlabel('CT')
+#ax1.set_xticks(np.arange(min(CT),max(CT), step=1))
+fig.colorbar(ctm, ax=ax1)
+
+sam=ax2.scatter(SA,-depth_s,c=SA,cmap=cmocean.cm.haline)
+ax2.set_xlabel('SA')
+ax2.grid(True)
+#ax2.set_xticks(np.arange(min(SA),max(SA), step=0.5))
+fig.colorbar(sam, ax=ax2)
+
+oxm=ax3.scatter(oxy_s,-depth_s,c=oxy_s,cmap=cmocean.cm.oxy)
+ax3.set_xlabel('Oxygen')
+ax3.grid(True)
+ax3.set_xticks(np.arange(min(oxy_s),max(oxy_s), step=10))
+fig.colorbar(oxm, ax=ax3)
+
+flm=ax4.scatter(flo_s,-depth_s,c=flo_s,cmap=cmocean.cm.algae)
+ax4.set_xlabel('Fluorescence')
+ax4.grid(True)
+ax4.set_xticks(np.arange(min(flo_s),max(flo_s), step=0.1))
+fig.colorbar(flm, ax=ax4)
+
+ax1.set_ylabel('Depth (dbar)')
+
+plt.show()
+
+
+
+
+## Subplots of contoured properties v time # so, I took this out for now but would like to add back in at some point in time. 
+
+#print('Property Plots Over Time are Next')
+#plt.figure(4)
 
 #calculate MLD - apparently this doesn't exist for the python gsw
 #mld=gsw.mlp(SA,CT,depth)
 
 #plt.subplots(4,1,sharex=True)
 
-time_s=time.to_numpy()
-ax1=subplot(411)
-plt.contourf(time, depth_s, CT, alpha=0.7,cmap=cmocean.cm.thermal);
+#time_s=time.to_numpy()
+#ax1=subplot(411)
+#plt.contourf(time, depth_s, CT, alpha=0.7,cmap=cmocean.cm.thermal);
 #plt.contour(time,depth,mld,linestyle=dash,linecolor=white)
-plt.setp(ax1.get_xticklabels(), fontsize=6)
-cb=plt.colorbar(CT)
-cb.set_label('CT')
+#plt.setp(ax1.get_xticklabels(), fontsize=6)
+#cb=plt.colorbar(CT)
+#cb.set_label('CT')
 
-ax2=subplot(412,sharex=ax1)
-plt.contourf(time,depth_s,SA,alpha=20, cmap=cmocean.cm.haline)
-plt.setp(ax2.get_xticklabels(), visible=False)
-cb=plt.colorbar(SA)
-cb.set_label('SA')
+#ax2=subplot(412,sharex=ax1)
+#plt.contourf(time,depth_s,SA,alpha=20, cmap=cmocean.cm.haline)
+#plt.setp(ax2.get_xticklabels(), visible=False)
+#cb=plt.colorbar(SA)
+#cb.set_label('SA')
 
-ax3=subplot(413,sharex=ax1)
-plt.contourf(time,depth_s,oxy_s,alpha=20, cmap=cmocean.cm.oxy)
-plt.setp(ax3.get_xticklabels(), visible=False)
-cb=plt.colorbar(oxy)
-cb.set_label('Oxygen')
+#ax3=subplot(413,sharex=ax1)
+#plt.contourf(time,depth_s,oxy_s,alpha=20, cmap=cmocean.cm.oxy)
+#plt.setp(ax3.get_xticklabels(), visible=False)
+#cb=plt.colorbar(oxy)
+#cb.set_label('Oxygen')
 
-ax4=subplot(414,sharex=ax1)
-plt.contourf(time,depth_s,flo_s,alpha=.7,cmap=cmocean.cm.algae)
-plt.setp(ax4.get_xticklabels(), fontsize=12, visible=True)
-plt.show()
-cb=plt.colorbar(flo)
-cb.set_label('Fluorescence')
+#ax4=subplot(414,sharex=ax1)
+#plt.contourf(time,depth_s,flo_s,alpha=.7,cmap=cmocean.cm.algae)
+#plt.setp(ax4.get_xticklabels(), fontsize=12, visible=True)
+#plt.show()
+#cb=plt.colorbar(flo)
+#cb.set_label('Fluorescence')
 
-plt.xlabel('Time')
-plt.ylabel('Depth (dbar)')
+#plt.xlabel('Time')
+#plt.ylabel('Depth (dbar)')
 
 ##refs
 #https://matplotlib.org/3.2.1/api/_as_gen/matplotlib.pyplot.subplot.html
