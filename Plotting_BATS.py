@@ -35,13 +35,11 @@ print('Question for the class: how do you add a colorbar to a basemap background
 print('Plotting T/S')
 
 # plot t/s
-didx=len(qcdf['CTDPRS'])
+didx=len(depth])
 
-qcdf = qcdf[:-didx]
+SA=gsw.SA_from_SP(sal,depth,lon_plot,lat_plot)
 
-SA=gsw.SA_from_SP(sal,qcdf['CTDPRS'],lon_plot,lat_plot)
-
-CT=gsw.CT_from_t(SA,temp,qcdf['CTDPRS'])
+CT=gsw.CT_from_t(SA,temp,depth)
 
 for i=0:len(SA(:,1))
 CT_5mean=np.mean(CT(i,:))
@@ -82,27 +80,27 @@ mld=gsw.mlp(SA,CT,depth)
 
 time=time.to_numpy()
 ax1=subplot(411)
-plt.contourf(time, qcdf['CTDPRS'], CT, alpha=0.7,cmap=cmocean.cm.thermal);
+plt.contourf(time, depth, CT, alpha=0.7,cmap=cmocean.cm.thermal);
 Hold on
-plt.contour(time,qcdf['CTDPRS'],mld, linestyle=dash,linecolor=white)
+plt.contour(time,depth,mld, linestyle=dash,linecolor=white)
 plt.setp(ax1.get_xticklabels(), fontsize=6)
 cb=plt.colorbar(CT)
 cb.set_label(‘CT’)
 
 ax2=subplot(412,sharex=ax1)
-plt.contourf(time,qcdf['CTDPRS'],SA,alpha=20, cmap=cmocean.cm.haline)
+plt.contourf(time,depth,SA,alpha=20, cmap=cmocean.cm.haline)
 plt.setp(ax2.get_xticklabels(), visible=False)
 cb=plt.colorbar(SA)
 cb.set_label(‘SA’)
 
 ax3=(413,sharex=ax1)
-plt.contourf(time,qcdf['CTDPRS'],oxy,alpha=20, cmap=cmocean.cm.oxy)
+plt.contourf(time,depth,oxy,alpha=20, cmap=cmocean.cm.oxy)
 plt.setp(ax3.get_xticklabels(), visible=False)
 cb=plt.colorbar(oxy)
 cb.set_label(‘Oxygen (\mumol/kg)’)
 
 ax4=(414,sharex=ax1)
-plt.contourf(time,qcdf['CTDPRS'],flo,alpha=.7,cmap=cmocean.cm.algae)
+plt.contourf(time,depth,flo,alpha=.7,cmap=cmocean.cm.algae)
 plt.setp(ax4.get_xticklabels(), fontsize=12, visible=True)
 plt.show()
 cb=plt.colorbar(flo)
