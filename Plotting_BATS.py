@@ -18,7 +18,9 @@ from matplotlib.ticker import MaxNLocator
 
 # what variables do you have
 
-
+f = open('store.pckl', 'rb')
+obj = pickle.load(f)
+f.close()
 
 ##make bathy map of BATS study area, Note: -180 t0 180
 print('Making Map of BATS study area')
@@ -56,18 +58,21 @@ didx=len(depth)
 
 # to use gsw - must be numpy array
 
-sal_s = np.asarray(sal)
-depth_s = np.asarray(depth)
-temp_s = np.asarray(temp)
+sal_s = np.asarray(sal[0])
+depth_s = np.asarray(depth[0])
+didx=len(depth_s)-1
+depth_s=depth_s[:didx]
+temp_s = np.asarray(temp[0])
 
-SA=gsw.SA_from_SP(sal,depth,lon_plot,lat_plot)
 
-CT=gsw.CT_from_t(SA,temp,depth)
+SA=gsw.SA_from_SP(sal_s,depth_s,lon_plot,lat_plot)
+
+CT=gsw.CT_from_t(SA,temp_s,depth)
 
 
 #CT_5mean=np.mean(CT)
 #SA_5mean=np.mean(SA)
-# took this out since not a daily record
+
 
 # plot T/S diagram - altered from example from https://medium.com@hafezahmad/making-#temperature-salinity-diagrams-called-the-t-s-diagram-with-python-and-r-#programming-5deec6378a29
 
