@@ -64,6 +64,8 @@ FILETYPE = '.zip'
 def get_soup(url):
     return bs(requests.get(url).text, 'html.parser')
     
+zip_file = ''
+    
 # scrape data from URL
 for link in get_soup(URL).find_all('a'):
     file_link = link.get('href')
@@ -78,8 +80,12 @@ for link in get_soup(URL).find_all('a'):
             zip_file = file.name
             with ZipFile(zip_file, 'r') as zipObj:
                 zipObj.extractall(out_dir + '/' + file.name[:-8])
-    #else:
-      #  raise ValueError('Invalid input for time period')
+
+if os.path.exists(zip_file):
+    os.remove(zip_file)
+else:
+    raise ValueError('Invalid selection. Please try again.')
+ 
 
 path = '../CCHDO_BATS_data/BIOS' + selection
 
