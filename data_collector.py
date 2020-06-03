@@ -168,3 +168,15 @@ depth = [None]*len(d)
 for i in range(len(d)):
     depth[i]= data.iloc[:len(d[xx[i]]), 0]
     
+    
+import numpy as np
+sal1 = np.array(sal[0])
+
+import pickle
+f = open('store.pckl', 'wb')
+pickle.dump([temp, sal, oxy, flo, depth, time, lat, lon], f)
+f.close()
+
+f = open('store.pckl', 'rb')
+obj = pickle.load(f)
+f.close()
