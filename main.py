@@ -238,6 +238,7 @@ f.close()
 print('\nReady to plot.')
 
 
+# Plotting ########################################################
 
 ##make bathy map of BATS study area, Note: -180 t0 180
 print('Making Map of BATS study area')
@@ -321,7 +322,7 @@ cb=plt.colorbar(sc)
 cb.set_label('Density')
 plt.xlabel('Salinity A')
 plt.ylabel('Conservative Temperature')
-plt.title('T-S at BATS at (\ntime_s[0])')
+plt.title('T-S at BATS at T={}'.format(selection))')
 cb.set_label('Density')
 plt.show()
 
@@ -359,6 +360,7 @@ ax4.set_xticks(np.arange(min(flo_s),max(flo_s), step=0.1))
 fig.colorbar(flm, ax=ax4)
 
 ax1.set_ylabel('Depth (dbar)')
+fig.title('Properties at T={}'.format(selection))')
 
 plt.show()
 
