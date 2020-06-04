@@ -360,7 +360,7 @@ ax4.set_xticks(np.arange(min(flo_s),max(flo_s), step=0.1))
 fig.colorbar(flm, ax=ax4)
 
 ax1.set_ylabel('Depth (dbar)')
-fig.title('Properties at T= '+str(year)+' - '+str(month)+' - '+str(day)+' ')
+plt.title('Properties at T= '+str(year)+' - '+str(month)+' - '+str(day)+' ')
 
 plt.show()
 
