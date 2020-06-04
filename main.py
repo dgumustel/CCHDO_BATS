@@ -334,6 +334,7 @@ print('Property Plots Coming Up')
 
 #plt.subplots(1,4,sharey=True)
 fig, ((ax1, ax2, ax3, ax4)) = plt.subplots(nrows=1, ncols=4, sharex=False, sharey=True)
+fig.suptitle('Properties at T= '+str(year)+' - '+str(month)+' - '+str(day)+' ', fontsize=16)
 
 ax1.grid(True)
 ctm= ax1.scatter(CT,-depth_s,c=CT,cmap=cmocean.cm.thermal);
@@ -360,7 +361,7 @@ ax4.set_xticks(np.arange(min(flo_s),max(flo_s), step=0.1))
 fig.colorbar(flm, ax=ax4)
 
 ax1.set_ylabel('Depth (dbar)')
-plt.title('Properties at T= '+str(year)+' - '+str(month)+' - '+str(day)+' ')
+#plt.title('Properties at T= '+str(year)+' - '+str(month)+' - '+str(day)+' ')
 
 plt.show()
 
