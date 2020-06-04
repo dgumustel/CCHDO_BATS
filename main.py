@@ -5,9 +5,16 @@ This data is then put into a dictionary where the dict key is the filename and t
 is a pandas DataFrames containg data from the corresponding .csv file. 
 """
 
+# packages to install:
+# basemap: conda install -c anaconda basemap
+# basemap highres: conda install -c conda-forge basemap-data-hires
+# gsw teos10: conda install -c conda-forge gsw
+# cmocean: conda install -c conda-forge cmocean
+# remember to restart ipython after install to initialize 
+
+
 #imports
 import sys, os
-import os
 from zipfile import ZipFile
 import pandas as pd
 from bs4 import BeautifulSoup as bs
@@ -15,6 +22,11 @@ import requests
 import glob
 import numpy as np
 import pickle
+import cmocean
+from mpl_toolkits.basemap import Basemap
+import matplotlib.pyplot as plt
+import gsw
+from matplotlib.ticker import MaxNLocator
 
 # local imports
 sys.path.append(os.path.abspath('shared'))
@@ -215,42 +227,17 @@ depth = [None]*len(d)
 for i in range(len(d)):
     depth[i]= data.iloc[:len(d[xx[i]]), 0]
     
-#sal1 = np.array(sal[0])    # see example salinity data
+#sal1 = np.array(sal[0])    # example of indexing salinity data
 
-# save data as pickle files for plotting
+# save data as pickle files just in case
 f = open('store.pckl', 'wb')
 pickle.dump([temp, sal, oxy, flo, depth, time, lat, lon], f)
 f.close()
 
-f = open('store.pckl', 'rb')
-obj = pickle.load(f)
-f.close()
 
 print('\nReady to plot.')
 
-#download
 
-# basemap: conda install -c anaconda basemap
-# basemap highres: conda install -c conda-forge basemap-data-hires
-# gsw teos10: To install with Anaconda: conda install -c conda-forge cmocean
-#remember to restart ipython after install to initialize 
-
-
-#imports
-import sys as sys
-import cmocean
-from mpl_toolkits.basemap import Basemap
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import gsw
-from matplotlib.ticker import MaxNLocator
-
-# what variables do you have
-
-f = open('store.pckl', 'rb')
-obj = pickle.load(f)
-f.close()
 
 ##make bathy map of BATS study area, Note: -180 t0 180
 print('Making Map of BATS study area')
