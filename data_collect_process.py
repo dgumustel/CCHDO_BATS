@@ -138,7 +138,7 @@ else:    # stop program if no corresponding exists
 # DATA PROCESSING ########################################################
 
 # define path to extracted data
-path = '../CCHDO_BATS_data/BIOS' + selection
+path = out_dir + 'BIOS' + selection
 
 # create list of CCHDO BATS file names
 csvs = [x for x in os.listdir(path) if x.endswith('.csv')]
