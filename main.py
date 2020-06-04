@@ -322,7 +322,7 @@ cb=plt.colorbar(sc)
 cb.set_label('Density')
 plt.xlabel('Salinity A')
 plt.ylabel('Conservative Temperature')
-plt.title('T-S at BATS at T={}'.format(selection))')
+plt.title('T-S at BATS at T= '+str(year)+' - '+str(month)+' - '+str(day)+'')
 cb.set_label('Density')
 plt.show()
 
@@ -360,7 +360,7 @@ ax4.set_xticks(np.arange(min(flo_s),max(flo_s), step=0.1))
 fig.colorbar(flm, ax=ax4)
 
 ax1.set_ylabel('Depth (dbar)')
-fig.title('Properties at T={}'.format(selection))')
+fig.title('Properties at T= '+str(year)+' - '+str(month)+' - '+str(day)+' ')
 
 plt.show()
 
