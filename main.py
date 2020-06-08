@@ -23,10 +23,10 @@ import glob
 import numpy as np
 import pickle
 import cmocean
-from mpl_toolkits.basemap import Basemap
+#from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
 import gsw
-from matplotlib.ticker import MaxNLocator
+#from matplotlib.ticker import MaxNLocator
 
 # local imports
 sys.path.append(os.path.abspath('shared'))
@@ -240,6 +240,14 @@ print('\nReady to plot.')
 
 # Plotting ########################################################
 
+# close any previous plots
+plt.close('all')
+
+# establish coordinates
+lon_plot=lon.to_numpy() 
+lat_plot=lat.to_numpy()
+
+"""
 ##make bathy map of BATS study area, Note: -180 t0 180
 print('Making Map of BATS study area')
 plt.figure(1)
@@ -248,8 +256,7 @@ m = Basemap(width=1000000,height=1000000,projection='lcc',
 im = m.etopo()
 cb = m.colorbar(im,location='right',pad='10%')
 #scatter plot lons and lat coordinates on top of bathy
-lon_plot=lon.to_numpy() 
-lat_plot=lat.to_numpy()
+
 x, y = m(-lon_plot,lat_plot)
 m.scatter(x,y,c='k',s=50,marker='*')
 # meridians on bottom and left
@@ -264,14 +271,13 @@ plt.show()
 plt.savefig('Bat_Map.png')
 
 print('Question for the class: how do you add a colorbar to a basemap background graphics object?')
-
+"""
 
 ## Needs to be updated one CTDPRS variable added to processing
 
 # PLOT 1 - T/S 
 
 print('Plotting T/S')
-plt.figure(2)
 
 # plot t/s
 didx=len(depth)
