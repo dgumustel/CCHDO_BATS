@@ -30,7 +30,7 @@ cmocean: conda install -c conda-forge cmocean
 All of the code for this project is included in the main.py file. To run this code, download the file 
 or clone the GitHub repo to your machine or server. Place the code inside of a code directory (folder) 
 with a name of your choice. After running main.py, a data subdirectory called foldername_data will be 
-generated parallel to the folder containing the main.py file. This new data folder will store folders 
+generated parallel to the folder containing the main.py file and will contain the unzipped .csv files. 
 
 
 ### User inputs
